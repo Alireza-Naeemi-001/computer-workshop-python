@@ -1,0 +1,28 @@
+$macAddress = Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled = true" |
+    Select-Object -First 1 -ExpandProperty MACAddress
+
+$driveC = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID = 'C:'" |
+    Select-Object @{
+        Name = 'TotalSize_GB'
+        Expression = { [math]::Round($_.Size / 1GB, 2) }
+    }
+
+$outputFile = Join-Path -Path ([Environment]::GetFolderPath("Desktop")) -ChildPath "reportmac.txt"
+
+@"
+Total Size Drive C: $($driveC.TotalSize_GB) GB
+MAC: $macAddress
+"@ | Out-File -FilePath $outputFile -Encoding UTF8
+
+
+________________________________
+
+$ramFormatted = Get-CimInstance Win32_PhysicalMemory |
+    Measure-Object -Property Capacity -Sum |
+    Select-Object @{
+        Name = 'RAM'
+        Expression = { "$([math]::Round($_.Sum / 1GB, 2)) GB" }
+    }
+
+$outputFile = Join-Path -Path ([Environment]::GetFolderPath("Desktop")) -ChildPath "reportram.txt"
+"RAM: $($ramFormatted.RAM)" | Out-File -FilePath $outputFile -Encoding UTF8

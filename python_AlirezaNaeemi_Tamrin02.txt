@@ -1,0 +1,26 @@
+@echo off
+set "SOURCE_DIR=%USERPROFILE%\Documents"
+set "BACKUP_DIR=%USERPROFILE%\Desktop\Backup"
+
+if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%"
+
+xcopy "%SOURCE_DIR%\*" "%BACKUP_DIR%\" /E /I /Y >nul
+
+if %errorlevel% leq 1 (
+    color 0A
+    echo.
+    echo ============================================
+    echo   OK - Documents copied to Backup folder
+    echo   Path: "%BACKUP_DIR%"
+    echo ============================================
+) else (
+    color 0C
+    echo.
+    echo ============================================
+    echo   FAILED - Could not copy some files
+    echo   Check the source folder and try again
+    echo ============================================
+)
+
+echo.
+pause
